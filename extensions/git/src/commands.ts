@@ -581,6 +581,15 @@ export class CommandCenter {
 				this.telemetryReporter.sendTelemetryEvent('clone', { outcome: 'directory_not_empty' });
 			} else if (/Cancelled/i.test(err && (err.message || err.stderr || ''))) {
 				return;
+			} else if (/git could not be found in the system/.test(err)) {
+				const downloadGit = localize('download git', 'Download Git');
+				if (await window.showErrorMessage(
+					localize('no git', 'We could not clone your repository as Git is not installed.'),
+					downloadGit
+				) === downloadGit) {
+					commands.executeCommand('vscode.open', Uri.parse('https://aka.ms/vscode-download-git'));
+				}
+				return;
 			} else {
 				/* __GDPR__
 					"clone" : {
